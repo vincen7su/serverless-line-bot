@@ -1,0 +1,46 @@
+service: chatbot
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpack:
+    includeModules:
+      forceExclude:
+        - aws-sdk
+    packager: yarn
+  functionPrefix: chatbot-${ self:provider.stage }
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-northeast-1
+  stage: ${ opt:stage, 'dev' }
+  memorySize: 128
+  environment:
+    LINE_CHANNEL_ACCESS_TOKEN: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    LINE_CHANNEL_SECRET: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    DEFAULT_RICH_MENU: richmenu-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+package:
+  individually: true
+  exclude:
+    - .git/**
+
+functions:
+  lineWebhook:
+    handler: functions/lineWebhook.handler
+    name: ${ self:custom.functionPrefix }-lineWebhook
+    description: LINE webhook.
+    events:
+      - http:
+          path: webhook/line
+          method: post
+
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${ self:service }-${ self:provider.stage }
+        Description: Chatbot API

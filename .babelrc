@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    "source-map-support",
+    "transform-class-properties",
+    ["transform-object-rest-spread",
+      {
+        "useBuiltIns": true
+      }
+    ]
+  ],
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "8.10"
+      },
+      "modules": false
+    }]
+  ]
+}
